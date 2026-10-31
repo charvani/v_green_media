@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+const occasions = [
+  'Employee Onboarding',
+  'Corporate Diwali Gifting',
+  'New Year Gifts',
+  'Client and Vendor Gifting',
+  'Events and Trade Shows',
+  'Employee Recognition',
+];
+
 void main() {
   runApp(const MyApp());
 }
@@ -35,8 +44,16 @@ const products = [
     description:
         'Thoughtful handmade cards embedded with seeds that grow into a little patch of wildflowers.',
     price: '₹35–₹75 / card',
-    occasions: ['Weddings', 'Thank you', 'Festivals'],
-    customisation: 'Choose seed mix, paper colour, message, and printed artwork.',
+    occasions: [
+      'Weddings',
+      'Thank you',
+      'Festivals',
+      'Client and Vendor Gifting',
+      'Events and Trade Shows',
+      'Employee Recognition',
+    ],
+    customisation:
+        'Choose seed mix, paper colour, message, and printed artwork.',
     icon: Icons.local_florist_outlined,
   ),
   Product(
@@ -47,8 +64,16 @@ const products = [
     description:
         'A sturdy, reusable cotton tote made for errands, events, and everyday adventures.',
     price: '₹249–₹499 / bag',
-    occasions: ['Welcome kits', 'Birthdays', 'Conferences'],
-    customisation: 'Add a logo or illustration; select print colour and handle length.',
+    occasions: [
+      'Welcome kits',
+      'Birthdays',
+      'Conferences',
+      'Employee Onboarding',
+      'Events and Trade Shows',
+      'Employee Recognition',
+    ],
+    customisation:
+        'Add a logo or illustration; select print colour and handle length.',
     icon: Icons.shopping_bag_outlined,
   ),
   Product(
@@ -59,8 +84,18 @@ const products = [
     description:
         'A compact planter that brings a calm, natural touch to desks and windowsills.',
     price: '₹399–₹799 / planter',
-    occasions: ['Housewarming', 'Employee gifts', 'Thank you'],
-    customisation: 'Pick the plant, planter finish, and a personalised name tag.',
+    occasions: [
+      'Housewarming',
+      'Employee gifts',
+      'Thank you',
+      'Employee Onboarding',
+      'Corporate Diwali Gifting',
+      'New Year Gifts',
+      'Client and Vendor Gifting',
+      'Employee Recognition',
+    ],
+    customisation:
+        'Pick the plant, planter finish, and a personalised name tag.',
     icon: Icons.eco_outlined,
   ),
   Product(
@@ -71,8 +106,19 @@ const products = [
     description:
         'A double-wall bottle that keeps drinks at the right temperature while reducing single-use waste.',
     price: '₹599–₹1,099 / bottle',
-    occasions: ['Corporate gifts', 'Travel', 'Sports events'],
-    customisation: 'Choose capacity and colour, with optional name or logo engraving.',
+    occasions: [
+      'Corporate gifts',
+      'Travel',
+      'Sports events',
+      'Employee Onboarding',
+      'Corporate Diwali Gifting',
+      'New Year Gifts',
+      'Client and Vendor Gifting',
+      'Events and Trade Shows',
+      'Employee Recognition',
+    ],
+    customisation:
+        'Choose capacity and colour, with optional name or logo engraving.',
     icon: Icons.water_drop_outlined,
   ),
   Product(
@@ -83,8 +129,19 @@ const products = [
     description:
         'A lovely everyday notebook with recycled pages for ideas, plans, and sketches.',
     price: '₹199–₹449 / journal',
-    occasions: ['Back to school', 'Workshops', 'Welcome kits'],
-    customisation: 'Personalise the cover, page layout, binding, and elastic band colour.',
+    occasions: [
+      'Back to school',
+      'Workshops',
+      'Welcome kits',
+      'Employee Onboarding',
+      'Corporate Diwali Gifting',
+      'New Year Gifts',
+      'Client and Vendor Gifting',
+      'Events and Trade Shows',
+      'Employee Recognition',
+    ],
+    customisation:
+        'Personalise the cover, page layout, binding, and elastic band colour.',
     icon: Icons.menu_book_outlined,
   ),
   Product(
@@ -95,8 +152,18 @@ const products = [
     description:
         'A lightweight, reusable cup for coffee on the go and slower mornings at home.',
     price: '₹299–₹649 / cup',
-    occasions: ['Festivals', 'Team celebrations', 'New year'],
-    customisation: 'Select cup size, lid colour, and a printed or engraved design.',
+    occasions: [
+      'Festivals',
+      'Team celebrations',
+      'New year',
+      'Employee Onboarding',
+      'Corporate Diwali Gifting',
+      'New Year Gifts',
+      'Client and Vendor Gifting',
+      'Employee Recognition',
+    ],
+    customisation:
+        'Select cup size, lid colour, and a printed or engraved design.',
     icon: Icons.coffee_outlined,
   ),
   Product(
@@ -107,8 +174,17 @@ const products = [
     description:
         'Everything needed to grow fresh herbs at home, packed as a cheerful little gift.',
     price: '₹349–₹699 / kit',
-    occasions: ['Housewarming', 'Mother’s Day', 'Thank you'],
-    customisation: 'Choose three herb seeds, pot style, and a custom care card.',
+    occasions: [
+      'Housewarming',
+      'Mother’s Day',
+      'Thank you',
+      'Corporate Diwali Gifting',
+      'New Year Gifts',
+      'Client and Vendor Gifting',
+      'Employee Recognition',
+    ],
+    customisation:
+        'Choose three herb seeds, pot style, and a custom care card.',
     icon: Icons.grass_outlined,
   ),
   Product(
@@ -119,8 +195,19 @@ const products = [
     description:
         'A considered bundle of useful, planet-friendly favourites, ready to make someone smile.',
     price: '₹899–₹2,499 / hamper',
-    occasions: ['Diwali', 'Weddings', 'Corporate gifting'],
-    customisation: 'Build your own bundle, choose a note, and personalise the outer packaging.',
+    occasions: [
+      'Diwali',
+      'Weddings',
+      'Corporate gifting',
+      'Employee Onboarding',
+      'Corporate Diwali Gifting',
+      'New Year Gifts',
+      'Client and Vendor Gifting',
+      'Events and Trade Shows',
+      'Employee Recognition',
+    ],
+    customisation:
+        'Build your own bundle, choose a note, and personalise the outer packaging.',
     icon: Icons.redeem_outlined,
   ),
 ];
@@ -158,30 +245,42 @@ class ProductCatalogPage extends StatefulWidget {
 
 class _ProductCatalogPageState extends State<ProductCatalogPage> {
   String _selectedCategory = 'All';
+  String _selectedOccasion = 'All';
   String _searchQuery = '';
 
   List<String> get _categories => [
-        'All',
-        ...products.map((product) => product.category).toSet(),
-      ];
+    'All',
+    ...products.map((product) => product.category).toSet(),
+  ];
 
   List<Product> get _visibleProducts {
     final query = _searchQuery.trim().toLowerCase();
     return products.where((product) {
       final matchesCategory =
           _selectedCategory == 'All' || product.category == _selectedCategory;
-      final matchesSearch = query.isEmpty ||
+      final matchesOccasion =
+          _selectedOccasion == 'All' ||
+          product.occasions.contains(_selectedOccasion);
+      final matchesSearch =
+          query.isEmpty ||
           product.name.toLowerCase().contains(query) ||
           product.description.toLowerCase().contains(query) ||
-          product.category.toLowerCase().contains(query);
-      return matchesCategory && matchesSearch;
+          product.category.toLowerCase().contains(query) ||
+          product.occasions.any(
+            (occasion) => occasion.toLowerCase().contains(query),
+          );
+      return matchesCategory && matchesOccasion && matchesSearch;
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final columns = width >= 1050 ? 3 : width >= 680 ? 2 : 1;
+    final columns = width >= 1050
+        ? 3
+        : width >= 680
+        ? 2
+        : 1;
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
@@ -197,6 +296,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                       delegate: SliverChildBuilderDelegate(
                         (context, index) => _ProductCard(
                           product: _visibleProducts[index],
+                          selectedOccasion: _selectedOccasion,
                           onTap: () => _showProductDetails(
                             context,
                             _visibleProducts[index],
@@ -322,7 +422,11 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           const SizedBox(height: 18),
           Row(
             children: [
-              const Icon(Icons.spa_outlined, size: 17, color: Color(0xFF4E7859)),
+              const Icon(
+                Icons.spa_outlined,
+                size: 17,
+                color: Color(0xFF4E7859),
+              ),
               const SizedBox(width: 7),
               Text(
                 '${products.length} feel-good finds',
@@ -333,8 +437,11 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                 ),
               ),
               const SizedBox(width: 15),
-              const Icon(Icons.tune_rounded,
-                  size: 16, color: Color(0xFF4E7859)),
+              const Icon(
+                Icons.tune_rounded,
+                size: 16,
+                color: Color(0xFF4E7859),
+              ),
               const SizedBox(width: 6),
               const Text(
                 'Made personal',
@@ -380,6 +487,66 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
             ],
           ),
         ),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(22, 0, 22, 9),
+          child: Text(
+            'Shop by occasion',
+            style: TextStyle(
+              color: Color(0xFF536359),
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 44,
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 22),
+            scrollDirection: Axis.horizontal,
+            itemCount: occasions.length + 1,
+            separatorBuilder: (context, index) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              final occasion = index == 0 ? 'All' : occasions[index - 1];
+              final selected = occasion == _selectedOccasion;
+              return ChoiceChip(
+                label: Text(occasion),
+                selected: selected,
+                showCheckmark: false,
+                onSelected: (value) {
+                  setState(() => _selectedOccasion = occasion);
+                },
+                labelStyle: TextStyle(
+                  color: selected ? Colors.white : const Color(0xFF536359),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+                selectedColor: const Color(0xFF174B3A),
+                backgroundColor: Colors.white,
+                side: BorderSide(
+                  color: selected
+                      ? const Color(0xFF174B3A)
+                      : const Color(0xFFE6E9E3),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 9),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(22, 0, 22, 9),
+          child: Text(
+            'Shop by category',
+            style: TextStyle(
+              color: Color(0xFF536359),
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
         SizedBox(
           height: 44,
           child: ListView.separated(
@@ -405,7 +572,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                 selectedColor: const Color(0xFF174B3A),
                 backgroundColor: Colors.white,
                 side: BorderSide(
-                  color: selected ? const Color(0xFF174B3A) : const Color(0xFFE6E9E3),
+                  color: selected
+                      ? const Color(0xFF174B3A)
+                      : const Color(0xFFE6E9E3),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 9),
                 shape: RoundedRectangleBorder(
@@ -425,8 +594,11 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       padding: const EdgeInsets.symmetric(vertical: 64),
       child: Column(
         children: [
-          const Icon(Icons.search_off_rounded,
-              size: 42, color: Color(0xFF9AA69B)),
+          const Icon(
+            Icons.search_off_rounded,
+            size: 42,
+            color: Color(0xFF9AA69B),
+          ),
           const SizedBox(height: 12),
           const Text(
             'No products found',
@@ -437,6 +609,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
               setState(() {
                 _searchQuery = '';
                 _selectedCategory = 'All';
+                _selectedOccasion = 'All';
               });
             },
             child: const Text('Clear filters'),
@@ -490,9 +663,14 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
 }
 
 class _ProductCard extends StatelessWidget {
-  const _ProductCard({required this.product, required this.onTap});
+  const _ProductCard({
+    required this.product,
+    required this.selectedOccasion,
+    required this.onTap,
+  });
 
   final Product product;
+  final String selectedOccasion;
   final VoidCallback onTap;
 
   @override
@@ -523,7 +701,9 @@ class _ProductCard extends StatelessWidget {
                     left: 12,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 6),
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.94),
                         borderRadius: BorderRadius.circular(20),
@@ -547,8 +727,11 @@ class _ProductCard extends StatelessWidget {
                         color: Colors.white.withValues(alpha: 0.94),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(product.icon,
-                          color: const Color(0xFF315B40), size: 17),
+                      child: Icon(
+                        product.icon,
+                        color: const Color(0xFF315B40),
+                        size: 17,
+                      ),
                     ),
                   ),
                 ],
@@ -594,13 +777,16 @@ class _ProductCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const Icon(Icons.arrow_forward_rounded,
-                            color: Color(0xFF69806F), size: 18),
+                        const Icon(
+                          Icons.arrow_forward_rounded,
+                          color: Color(0xFF69806F),
+                          size: 18,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'For ${product.occasions.take(2).join(' · ')}',
+                      'For ${[if (selectedOccasion != 'All') selectedOccasion, ...product.occasions.where((occasion) => occasion != selectedOccasion).take(selectedOccasion == 'All' ? 2 : 1)].join(' · ')}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -709,8 +895,11 @@ class _ProductDetailsSheet extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.sell_outlined,
-                            color: Color(0xFF315B40), size: 19),
+                        const Icon(
+                          Icons.sell_outlined,
+                          color: Color(0xFF315B40),
+                          size: 19,
+                        ),
                         const SizedBox(width: 10),
                         Text(
                           product.price,
