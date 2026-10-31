@@ -18,5 +18,7 @@ void main() {
     expect(find.text('Perfect for'), findsOneWidget);
     expect(find.text('Make it yours'), findsOneWidget);
     expect(find.text('Weddings'), findsOneWidget);
+    expect(find.text('Logo printing'), findsOneWidget);
+    expect(find.text('Name personalisation'), findsOneWidget);
   });
 }
