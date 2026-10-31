@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "158689395461",
+    "project_id": "v-green-media",
+    "storage_bucket": "v-green-media.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158689395461:android:33837073579d32d2c7ed6c",
+        "android_client_info": {
+          "package_name": "com.example.v_green_media"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKtPgzosHpzftdhV_qCtApaDRkAXEuOk0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
