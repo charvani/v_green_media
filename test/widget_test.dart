@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:v_green_media/main.dart';
+import 'package:v_green_media/screens/enquiry_form_page.dart';
 
 void main() {
   testWidgets('catalog shows products and product details', (tester) async {
@@ -24,6 +25,7 @@ void main() {
     expect(find.text('Weddings'), findsOneWidget);
     expect(find.text('Logo printing'), findsOneWidget);
     expect(find.text('Name personalisation'), findsOneWidget);
+    expect(find.text('Enquire about this product'), findsOneWidget);
   });
 
   testWidgets('budget band filters products', (tester) async {
@@ -34,5 +36,63 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('6 products'), findsOneWidget);
+  });
+
+  testWidgets('search filters catalog by product name', (tester) async {
+    await tester.pumpWidget(const MyApp());
+
+    await tester.tap(find.byTooltip('Search products'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'journal');
+    await tester.tap(find.text('Search'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('1 products'), findsOneWidget);
+    final journal = find.text('Recycled Paper Journal');
+    await tester.scrollUntilVisible(
+      journal,
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(journal, findsOneWidget);
+    expect(find.text('Plantable Seed Cards'), findsNothing);
+  });
+
+  testWidgets('enquiry form shows requested order fields', (tester) async {
+    await tester.pumpWidget(const MaterialApp(home: EnquiryFormPage()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Product enquiry'), findsOneWidget);
+    expect(find.text('Name'), findsOneWidget);
+    expect(find.text('Company'), findsOneWidget);
+    expect(find.text('Phone'), findsOneWidget);
+    expect(find.text('Email'), findsOneWidget);
+    expect(find.text('Occasion'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Budget per unit'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Number of units'), findsOneWidget);
+    expect(find.text('Budget per unit'), findsOneWidget);
+    expect(find.text('Delivery date'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Products selected'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Products selected'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Customisation needed'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Customisation needed'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Message (optional)'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Message (optional)'), findsOneWidget);
   });
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/products.dart';
+import '../screens/enquiry_form_page.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({
@@ -314,6 +315,24 @@ class ProductDetailsSheet extends StatelessWidget {
                           ),
                         )
                         .toList(),
+                  ),
+                  const SizedBox(height: 22),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        final navigator = Navigator.of(context);
+                        navigator.pop();
+                        navigator.push(
+                          MaterialPageRoute<void>(
+                            builder: (context) =>
+                                EnquiryFormPage(initialProduct: product),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.mail_outline_rounded),
+                      label: const Text('Enquire about this product'),
+                    ),
                   ),
                 ],
               ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data/products.dart';
 import '../widgets/product_widgets.dart';
+import 'enquiry_form_page.dart';
 
 class ProductCatalogPage extends StatefulWidget {
   const ProductCatalogPage({super.key});
@@ -192,6 +193,18 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
               fontSize: 13,
               height: 1.5,
             ),
+          ),
+          const SizedBox(height: 18),
+          FilledButton.icon(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => const EnquiryFormPage(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.mail_outline_rounded, size: 18),
+            label: const Text('Make an enquiry'),
           ),
           const SizedBox(height: 18),
           Row(
@@ -444,34 +457,11 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   }
 
   Future<void> _showSearch() async {
-    final controller = TextEditingController(text: _searchQuery);
     final query = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Search products'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Try “journal” or “gifting”',
-            prefixIcon: Icon(Icons.search_rounded),
-          ),
-          onSubmitted: (value) => Navigator.pop(context, value),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Search'),
-          ),
-        ],
-      ),
+      builder: (context) => _ProductSearchDialog(initialQuery: _searchQuery),
     );
-    controller.dispose();
-    if (query != null) {
+    if (query != null && mounted) {
       setState(() => _searchQuery = query);
     }
   }
@@ -482,6 +472,57 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => ProductDetailsSheet(product: product),
+    );
+  }
+}
+
+class _ProductSearchDialog extends StatefulWidget {
+  const _ProductSearchDialog({required this.initialQuery});
+
+  final String initialQuery;
+
+  @override
+  State<_ProductSearchDialog> createState() => _ProductSearchDialogState();
+}
+
+class _ProductSearchDialogState extends State<_ProductSearchDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialQuery);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Search products'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: const InputDecoration(
+          hintText: 'Try “journal” or “gifting”',
+          prefixIcon: Icon(Icons.search_rounded),
+        ),
+        onSubmitted: (value) => Navigator.pop(context, value),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, _controller.text),
+          child: const Text('Search'),
+        ),
+      ],
     );
   }
 }
