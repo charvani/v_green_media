@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../data/enquiry.dart';
 import '../data/products.dart';
+import 'my_enquiries_page.dart';
 
 class EnquiryFormPage extends StatefulWidget {
   const EnquiryFormPage({super.key, this.initialProduct});
@@ -337,22 +339,57 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
       '${date.day.toString().padLeft(2, '0')}/'
       '${date.month.toString().padLeft(2, '0')}/${date.year}';
 
-  void _submit() {
+  Future<void> _submit() async {
     final isValid = _formKey.currentState!.validate();
     setState(() => _showProductsError = _selectedProducts.isEmpty);
     if (!isValid || _selectedProducts.isEmpty) return;
 
+    final submittedAt = DateTime.now();
+    final enquiry = Enquiry(
+      id: submittedAt.microsecondsSinceEpoch.toString(),
+      name: _nameController.text.trim(),
+      company: _companyController.text.trim(),
+      phone: _phoneController.text.trim(),
+      email: _emailController.text.trim(),
+      occasion: _selectedOccasion!,
+      units: int.parse(_unitsController.text.trim()),
+      budgetPerUnit: double.parse(_budgetController.text.trim()),
+      deliveryDate: _deliveryDate!,
+      products: _selectedProducts.map((product) => product.name).toList(),
+      customisations: _selectedCustomisations.toList(),
+      otherCustomisation: _otherCustomisationController.text.trim(),
+      message: _messageController.text.trim(),
+      submittedAt: submittedAt,
+    );
+    try {
+      await EnquiryStore().save(enquiry);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not save your enquiry: $error')),
+      );
+      return;
+    }
+    if (!mounted) return;
+
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Enquiry details complete'),
+        title: const Text('Enquiry saved'),
         content: const Text(
-          'Your enquiry is ready. This form is not connected to a submission service yet.',
+          'Your enquiry is saved on this device or browser. It has not been sent to V Green Media.',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Done'),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.of(this.context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => const MyEnquiriesPage(),
+                ),
+              );
+            },
+            child: const Text('View my enquiries'),
           ),
         ],
       ),

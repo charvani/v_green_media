@@ -64,7 +64,7 @@ const products = [
   Product(
     name: 'Plantable Seed Cards',
     imageUrl:
-        'https://images.unsplash.com/photo-1455390582262-044cmaa2d6d8?auto=format&fit=crop&w=900&q=85',
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=900&q=85',
     category: 'Paper goods',
     description:
         'Thoughtful handmade cards embedded with seeds that grow into a little patch of wildflowers.',

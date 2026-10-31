@@ -1,10 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:v_green_media/data/enquiry.dart';
 import 'package:v_green_media/main.dart';
 import 'package:v_green_media/screens/enquiry_form_page.dart';
+import 'package:v_green_media/screens/my_enquiries_page.dart';
 
 void main() {
+  testWidgets('catalog provides access to my enquiries', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const MyApp());
+
+    expect(find.byTooltip('My enquiries'), findsOneWidget);
+  });
+
+  testWidgets('my enquiries shows an empty state when there are no entries', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const MaterialApp(home: MyEnquiriesPage()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('No enquiries yet'), findsOneWidget);
+    expect(find.text('Make an enquiry'), findsOneWidget);
+  });
+
+  testWidgets('my enquiries lists saved local enquiries', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await EnquiryStore().save(
+      Enquiry(
+        id: '1',
+        name: 'Taylor Green',
+        company: 'Green Co',
+        phone: '1234567890',
+        email: 'taylor@example.com',
+        occasion: 'Employee Onboarding',
+        units: 25,
+        budgetPerUnit: 500,
+        deliveryDate: DateTime(2026, 12, 1),
+        products: const ['Plantable Seed Cards'],
+        customisations: const ['Logo printing'],
+        otherCustomisation: '',
+        message: '',
+        submittedAt: DateTime(2026, 10, 31),
+      ),
+    );
+
+    await tester.pumpWidget(const MaterialApp(home: MyEnquiriesPage()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Plantable Seed Cards'), findsOneWidget);
+    expect(find.text('Employee Onboarding · 25 units'), findsOneWidget);
+    await tester.tap(find.text('Plantable Seed Cards'));
+    await tester.pumpAndSettle();
+    expect(find.text('Enquiry details'), findsOneWidget);
+    expect(find.textContaining('taylor@example.com'), findsOneWidget);
+    expect(
+      find.text(
+        'This enquiry is saved locally and has not been sent to V Green Media.',
+      ),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('catalog shows products and product details', (tester) async {
     await tester.pumpWidget(const MyApp());
 

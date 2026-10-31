@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/products.dart';
 import '../widgets/product_widgets.dart';
 import 'enquiry_form_page.dart';
+import 'my_enquiries_page.dart';
 
 class ProductCatalogPage extends StatefulWidget {
   const ProductCatalogPage({super.key});
@@ -132,6 +133,15 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
             ],
           ),
           const Spacer(),
+          IconButton(
+            tooltip: 'My enquiries',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (context) => const MyEnquiriesPage(),
+              ),
+            ),
+            icon: const Icon(Icons.receipt_long_outlined),
+          ),
           IconButton(
             tooltip: 'Search products',
             onPressed: _showSearch,

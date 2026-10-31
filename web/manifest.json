@@ -1,0 +1,35 @@
+{
+    "name": "V Green Media",
+    "short_name": "V Green",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#F7F8F3",
+    "theme_color": "#174B3A",
+    "description": "Thoughtful sustainable gifts from V Green Media.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
