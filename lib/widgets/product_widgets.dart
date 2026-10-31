@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../data/products.dart';
+import '../services/product_sharing_service.dart';
+import '../services/whatsapp_service.dart';
 import '../screens/enquiry_form_page.dart';
 
 class ProductCard extends StatelessWidget {
@@ -183,13 +186,30 @@ class ProductDetailsSheet extends StatelessWidget {
                   Positioned(
                     top: 14,
                     right: 16,
-                    child: IconButton.filledTonal(
-                      tooltip: 'Close',
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close_rounded),
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.white.withValues(alpha: 0.92),
-                      ),
+                    child: Row(
+                      children: [
+                        IconButton.filledTonal(
+                          tooltip: 'Share product',
+                          onPressed: () => _shareProduct(context),
+                          icon: const Icon(Icons.share_rounded),
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.92,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton.filledTonal(
+                          tooltip: 'Close',
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(Icons.close_rounded),
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.92,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -320,6 +340,20 @@ class ProductDetailsSheet extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(
+                      onPressed: () =>
+                          openProductWhatsAppChat(context, product),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF128C4A),
+                        foregroundColor: Colors.white,
+                      ),
+                      icon: const Icon(Icons.chat_rounded),
+                      label: const Text('Chat about this product on WhatsApp'),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
                       onPressed: () {
                         final navigator = Navigator.of(context);
                         navigator.pop();
@@ -341,6 +375,87 @@ class ProductDetailsSheet extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _shareProduct(BuildContext context) async {
+    final renderObject = context.findRenderObject();
+    final sharePositionOrigin = renderObject is RenderBox
+        ? renderObject.localToGlobal(Offset.zero) & renderObject.size
+        : null;
+    try {
+      await shareProduct(product, sharePositionOrigin: sharePositionOrigin);
+    } on ProductImageShareException catch (error) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
+    } on Exception {
+      if (!context.mounted) return;
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Share product details'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image.network(
+                  product.imageUrl,
+                  height: 160,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.image_not_supported_outlined, size: 48),
+                ),
+                const SizedBox(height: 12),
+                SelectableText(
+                  product.name,
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 6),
+                SelectableText(product.description),
+                const SizedBox(height: 12),
+                Text(
+                  'This browser cannot open a share sheet. Copy the details and image link to share them.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Close'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                try {
+                  await Clipboard.setData(
+                    ClipboardData(
+                      text:
+                          '${product.name}\n${product.description}\n'
+                          '${product.imageUrl}',
+                    ),
+                  );
+                  if (!dialogContext.mounted) return;
+                  Navigator.pop(dialogContext);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Product details copied')),
+                  );
+                } on Exception catch (error) {
+                  if (!dialogContext.mounted) return;
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    SnackBar(content: Text('Could not copy details: $error')),
+                  );
+                }
+              },
+              child: const Text('Copy details'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
 

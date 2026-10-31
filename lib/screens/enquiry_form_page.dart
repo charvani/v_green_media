@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data/enquiry.dart';
 import '../data/products.dart';
+import '../services/page_metadata.dart';
 import 'my_enquiries_page.dart';
 
 class EnquiryFormPage extends StatefulWidget {
@@ -38,6 +39,14 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
   @override
   void initState() {
     super.initState();
+    setPageMetadata(
+      title: 'Product Enquiry | V Green Media',
+      description:
+          'Tell V Green Media about your sustainable gifting requirements '
+          'and request a custom product enquiry.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&h=630&q=85',
+    );
     if (widget.initialProduct case final product?) {
       _selectedProducts.add(product);
     }
@@ -381,13 +390,23 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              Navigator.of(this.context).push(
+              await Navigator.of(this.context).push(
                 MaterialPageRoute<void>(
                   builder: (context) => const MyEnquiriesPage(),
                 ),
               );
+              if (mounted) {
+                setPageMetadata(
+                  title: 'Product Enquiry | V Green Media',
+                  description:
+                      'Tell V Green Media about your sustainable gifting '
+                      'requirements and request a custom product enquiry.',
+                  imageUrl:
+                      'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&h=630&q=85',
+                );
+              }
             },
             child: const Text('View my enquiries'),
           ),

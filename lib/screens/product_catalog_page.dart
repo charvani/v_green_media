@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/products.dart';
+import '../services/page_metadata.dart';
 import '../widgets/product_widgets.dart';
 import 'enquiry_form_page.dart';
 import 'my_enquiries_page.dart';
@@ -17,6 +18,23 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   String _selectedOccasion = 'All';
   BudgetBand? _selectedBudgetBand;
   String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _setCatalogMetadata();
+  }
+
+  void _setCatalogMetadata() {
+    setPageMetadata(
+      title: 'V Green Media | Thoughtful Sustainable Gifts',
+      description:
+          'Discover thoughtful, customisable sustainable gifts for teams, '
+          'clients, and special occasions.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&h=630&q=85',
+    );
+  }
 
   List<String> get _categories => [
     'All',
@@ -135,11 +153,14 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           const Spacer(),
           IconButton(
             tooltip: 'My enquiries',
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (context) => const MyEnquiriesPage(),
-              ),
-            ),
+            onPressed: () async {
+              await Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => const MyEnquiriesPage(),
+                ),
+              );
+              if (mounted) _setCatalogMetadata();
+            },
             icon: const Icon(Icons.receipt_long_outlined),
           ),
           IconButton(
@@ -206,12 +227,13 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           ),
           const SizedBox(height: 18),
           FilledButton.icon(
-            onPressed: () {
-              Navigator.of(context).push(
+            onPressed: () async {
+              await Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (context) => const EnquiryFormPage(),
                 ),
               );
+              if (mounted) _setCatalogMetadata();
             },
             icon: const Icon(Icons.mail_outline_rounded, size: 18),
             label: const Text('Make an enquiry'),
@@ -477,12 +499,22 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
   }
 
   void _showProductDetails(BuildContext context, Product product) {
+    final catalogRoute = ModalRoute.of(context);
+    setPageMetadata(
+      title: '${product.name} | V Green Media',
+      description: product.description,
+      imageUrl: product.imageUrl,
+    );
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => ProductDetailsSheet(product: product),
-    );
+    ).whenComplete(() {
+      if (mounted && catalogRoute?.isCurrent == true) {
+        _setCatalogMetadata();
+      }
+    });
   }
 }
 

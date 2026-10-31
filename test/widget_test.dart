@@ -1,13 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:typed_data';
 
 import 'package:v_green_media/data/enquiry.dart';
+import 'package:v_green_media/data/products.dart';
 import 'package:v_green_media/main.dart';
+import 'package:v_green_media/services/whatsapp_service.dart';
+import 'package:v_green_media/services/product_sharing_service.dart';
 import 'package:v_green_media/screens/enquiry_form_page.dart';
 import 'package:v_green_media/screens/my_enquiries_page.dart';
 
 void main() {
+  test(
+    'product WhatsApp link opens the business chat with product details',
+    () {
+      final uri = productWhatsAppUri(products.first);
+
+      expect(uri.host, 'wa.me');
+      expect(uri.path, '/917207967958');
+      expect(uri.queryParameters['text'], contains(products.first.name));
+      expect(uri.queryParameters['text'], contains('pricing'));
+    },
+  );
+
+  test(
+    'product share payload includes the title, description, and image',
+    () async {
+      final product = products.first;
+      final imageBytes = Uint8List.fromList([1, 2, 3]);
+      final params = productShareParams(product, imageBytes);
+
+      expect(params.title, product.name);
+      expect(params.text, product.description);
+      expect(params.downloadFallbackEnabled, isFalse);
+      expect(params.files, hasLength(1));
+      expect(params.files!.single.mimeType, 'image/jpeg');
+      expect(
+        await params.files!.single.readAsBytes(),
+        orderedEquals(imageBytes),
+      );
+    },
+  );
+
   testWidgets('catalog provides access to my enquiries', (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const MyApp());
@@ -81,6 +116,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Perfect for'), findsOneWidget);
     expect(find.text('Make it yours'), findsOneWidget);
+    expect(find.byTooltip('Share product'), findsOneWidget);
+    expect(find.text('Chat about this product on WhatsApp'), findsOneWidget);
     expect(find.text('Weddings'), findsOneWidget);
     expect(find.text('Logo printing'), findsOneWidget);
     expect(find.text('Name personalisation'), findsOneWidget);

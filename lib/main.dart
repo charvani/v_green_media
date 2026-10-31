@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 
+import 'services/page_metadata.dart';
 import 'screens/product_catalog_page.dart';
 
 void main() {
+  setPageMetadata(
+    title: 'V Green Media | Thoughtful Sustainable Gifts',
+    description:
+        'Discover thoughtful, customisable sustainable gifts for teams, '
+        'clients, and special occasions.',
+    imageUrl:
+        'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&h=630&q=85',
+  );
   runApp(const MyApp());
 }
 

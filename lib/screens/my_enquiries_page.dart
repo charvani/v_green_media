@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/enquiry.dart';
+import '../services/page_metadata.dart';
 import 'enquiry_form_page.dart';
 
 class MyEnquiriesPage extends StatefulWidget {
@@ -17,7 +18,18 @@ class _MyEnquiriesPageState extends State<MyEnquiriesPage> {
   @override
   void initState() {
     super.initState();
+    _setMetadata();
     _enquiries = _store.load();
+  }
+
+  void _setMetadata() {
+    setPageMetadata(
+      title: 'My Enquiries | V Green Media',
+      description:
+          'View your saved product enquiries for sustainable corporate gifts.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&h=630&q=85',
+    );
   }
 
   @override
@@ -48,11 +60,14 @@ class _MyEnquiriesPageState extends State<MyEnquiriesPage> {
                 title: 'No enquiries yet',
                 message: 'Your submitted product enquiries will appear here.',
                 actionLabel: 'Make an enquiry',
-                onAction: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (context) => const EnquiryFormPage(),
-                  ),
-                ),
+                onAction: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (context) => const EnquiryFormPage(),
+                    ),
+                  );
+                  if (mounted) _setMetadata();
+                },
               );
             }
 
@@ -79,8 +94,14 @@ class _MyEnquiriesPageState extends State<MyEnquiriesPage> {
     );
   }
 
-  void _showDetails(BuildContext context, Enquiry enquiry) {
-    showDialog<void>(
+  Future<void> _showDetails(BuildContext context, Enquiry enquiry) async {
+    setPageMetadata(
+      title: 'Enquiry Details | V Green Media',
+      description: 'Review the details of your saved product enquiry.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&h=630&q=85',
+    );
+    await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Enquiry details'),
@@ -125,6 +146,7 @@ class _MyEnquiriesPageState extends State<MyEnquiriesPage> {
         ],
       ),
     );
+    if (mounted) _setMetadata();
   }
 }
 
