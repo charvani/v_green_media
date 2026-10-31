@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:v_green_media/data/enquiry.dart';
 import 'package:v_green_media/data/products.dart';
 import 'package:v_green_media/main.dart';
 import 'package:v_green_media/services/whatsapp_service.dart';
 import 'package:v_green_media/services/product_sharing_service.dart';
+import 'package:v_green_media/services/enquiry_service.dart';
 import 'package:v_green_media/screens/enquiry_form_page.dart';
 import 'package:v_green_media/screens/my_enquiries_page.dart';
+import 'package:v_green_media/screens/thank_you_page.dart';
 
 void main() {
   test(
@@ -42,6 +46,53 @@ void main() {
       );
     },
   );
+
+  test('Firestore enquiry data uses the expected document fields', () {
+    final deliveryDate = DateTime(2026, 12, 1);
+    final enquiry = Enquiry(
+      id: '1',
+      name: 'Taylor Green',
+      company: 'Green Co',
+      phone: '1234567890',
+      email: 'taylor@example.com',
+      occasion: 'Employee Onboarding',
+      units: 25,
+      budgetPerUnit: 500.5,
+      deliveryDate: deliveryDate,
+      products: const ['Plantable Seed Cards', 'Everyday Canvas Tote'],
+      customisations: const ['Logo printing'],
+      otherCustomisation: 'Use recycled packaging',
+      message: 'Please share a quote',
+      submittedAt: DateTime(2026, 10, 31),
+    );
+
+    final documentData = EnquiryService.toFirestoreData(enquiry);
+    expect(documentData.keys, {
+      'budget_per_unit',
+      'company',
+      'customisation_needed',
+      'delivery_date',
+      'email',
+      'enquiry_from',
+      'message',
+      'name',
+      'number_of_units',
+      'occasion',
+      'other_info',
+      'phone',
+      'products_selected',
+    });
+    expect(documentData['budget_per_unit'], 500.5);
+    expect(documentData['customisation_needed'], ['Logo printing']);
+    expect(documentData['delivery_date'], Timestamp.fromDate(deliveryDate));
+    expect(documentData['enquiry_from'], kIsWeb ? 'web' : 'mobile');
+    expect(documentData['number_of_units'], 25);
+    expect(documentData['other_info'], 'Use recycled packaging');
+    expect(documentData['products_selected'], [
+      'Plantable Seed Cards',
+      'Everyday Canvas Tote',
+    ]);
+  });
 
   testWidgets('catalog provides access to my enquiries', (tester) async {
     SharedPreferences.setMockInitialValues({});
@@ -190,5 +241,17 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     expect(find.text('Message (optional)'), findsOneWidget);
+  });
+
+  testWidgets('thank-you screen confirms enquiry without a dialog', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: ThankYouPage()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Thank you for your enquiry!'), findsOneWidget);
+    expect(find.text('View my enquiries'), findsOneWidget);
+    expect(find.text('Continue browsing'), findsOneWidget);
+    expect(find.byType(AlertDialog), findsNothing);
   });
 }

@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../data/enquiry.dart';
 import '../data/products.dart';
+import '../services/enquiry_service.dart';
 import '../services/page_metadata.dart';
-import 'my_enquiries_page.dart';
+import 'thank_you_page.dart';
 
 class EnquiryFormPage extends StatefulWidget {
   const EnquiryFormPage({super.key, this.initialProduct});
@@ -35,6 +37,7 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
   String? _selectedOccasion;
   DateTime? _deliveryDate;
   bool _showProductsError = false;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
@@ -270,9 +273,17 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
               SizedBox(
                 height: 50,
                 child: FilledButton.icon(
-                  onPressed: _submit,
-                  icon: const Icon(Icons.send_outlined),
-                  label: const Text('Submit enquiry'),
+                  onPressed: _isSubmitting ? null : _submit,
+                  icon: _isSubmitting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.send_outlined),
+                  label: Text(
+                    _isSubmitting ? 'Submitting...' : 'Submit enquiry',
+                  ),
                 ),
               ),
             ],
@@ -349,6 +360,7 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
       '${date.month.toString().padLeft(2, '0')}/${date.year}';
 
   Future<void> _submit() async {
+    if (_isSubmitting) return;
     final isValid = _formKey.currentState!.validate();
     setState(() => _showProductsError = _selectedProducts.isEmpty);
     if (!isValid || _selectedProducts.isEmpty) return;
@@ -370,47 +382,42 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
       message: _messageController.text.trim(),
       submittedAt: submittedAt,
     );
+    setState(() => _isSubmitting = true);
     try {
-      await EnquiryStore().save(enquiry);
+      await EnquiryService().createEnquiry(enquiry);
+    } on FirebaseException catch (error) {
+      if (!mounted) return;
+      setState(() => _isSubmitting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Could not submit your enquiry (${error.code}): ${error.message ?? 'Please try again.'}',
+          ),
+        ),
+      );
+      return;
     } catch (error) {
       if (!mounted) return;
+      setState(() => _isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not save your enquiry: $error')),
+        SnackBar(content: Text('Could not submit your enquiry: $error')),
       );
       return;
     }
     if (!mounted) return;
 
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Enquiry saved'),
-        content: const Text(
-          'Your enquiry is saved on this device or browser. It has not been sent to V Green Media.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              await Navigator.of(this.context).push(
-                MaterialPageRoute<void>(
-                  builder: (context) => const MyEnquiriesPage(),
-                ),
-              );
-              if (mounted) {
-                setPageMetadata(
-                  title: 'Product Enquiry | V Green Media',
-                  description:
-                      'Tell V Green Media about your sustainable gifting '
-                      'requirements and request a custom product enquiry.',
-                  imageUrl:
-                      'https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1200&h=630&q=85',
-                );
-              }
-            },
-            child: const Text('View my enquiries'),
-          ),
-        ],
+    String? localSaveError;
+    try {
+      await EnquiryStore().save(enquiry);
+    } catch (error) {
+      localSaveError = error.toString();
+    }
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+
+    await Navigator.of(context).pushReplacement<void, void>(
+      MaterialPageRoute<void>(
+        builder: (context) => ThankYouPage(localSaveError: localSaveError),
       ),
     );
   }
