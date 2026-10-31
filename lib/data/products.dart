@@ -16,6 +16,8 @@ class Product {
     required this.category,
     required this.description,
     required this.price,
+    required this.minimumPrice,
+    required this.maximumPrice,
     required this.occasions,
     required this.customisation,
     required this.customisationOptions,
@@ -27,11 +29,36 @@ class Product {
   final String category;
   final String description;
   final String price;
+  final int minimumPrice;
+  final int maximumPrice;
   final List<String> occasions;
   final String customisation;
   final List<String> customisationOptions;
   final IconData icon;
 }
+
+class BudgetBand {
+  const BudgetBand({
+    required this.label,
+    required this.minimumPrice,
+    this.maximumPrice,
+  });
+
+  final String label;
+  final int minimumPrice;
+  final int? maximumPrice;
+
+  bool includesPriceRange(Product product) =>
+      product.maximumPrice >= minimumPrice &&
+      (maximumPrice == null || product.minimumPrice <= maximumPrice!);
+}
+
+const budgetBands = [
+  BudgetBand(label: 'Under ₹500', minimumPrice: 0, maximumPrice: 499),
+  BudgetBand(label: '₹500 to ₹1,500', minimumPrice: 500, maximumPrice: 1500),
+  BudgetBand(label: '₹1,500 to ₹3,000', minimumPrice: 1500, maximumPrice: 3000),
+  BudgetBand(label: 'Above ₹3,000', minimumPrice: 3001),
+];
 
 const products = [
   Product(
@@ -42,6 +69,8 @@ const products = [
     description:
         'Thoughtful handmade cards embedded with seeds that grow into a little patch of wildflowers.',
     price: '₹35–₹75 / card',
+    minimumPrice: 35,
+    maximumPrice: 75,
     occasions: [
       'Weddings',
       'Thank you',
@@ -63,6 +92,8 @@ const products = [
     description:
         'A sturdy, reusable cotton tote made for errands, events, and everyday adventures.',
     price: '₹249–₹499 / bag',
+    minimumPrice: 249,
+    maximumPrice: 499,
     occasions: [
       'Welcome kits',
       'Birthdays',
@@ -84,6 +115,8 @@ const products = [
     description:
         'A compact planter that brings a calm, natural touch to desks and windowsills.',
     price: '₹399–₹799 / planter',
+    minimumPrice: 399,
+    maximumPrice: 799,
     occasions: [
       'Housewarming',
       'Employee gifts',
@@ -107,6 +140,8 @@ const products = [
     description:
         'A double-wall bottle that keeps drinks at the right temperature while reducing single-use waste.',
     price: '₹599–₹1,099 / bottle',
+    minimumPrice: 599,
+    maximumPrice: 1099,
     occasions: [
       'Corporate gifts',
       'Travel',
@@ -135,6 +170,8 @@ const products = [
     description:
         'A lovely everyday notebook with recycled pages for ideas, plans, and sketches.',
     price: '₹199–₹449 / journal',
+    minimumPrice: 199,
+    maximumPrice: 449,
     occasions: [
       'Back to school',
       'Workshops',
@@ -159,6 +196,8 @@ const products = [
     description:
         'A lightweight, reusable cup for coffee on the go and slower mornings at home.',
     price: '₹299–₹649 / cup',
+    minimumPrice: 299,
+    maximumPrice: 649,
     occasions: [
       'Festivals',
       'Team celebrations',
@@ -186,6 +225,8 @@ const products = [
     description:
         'Everything needed to grow fresh herbs at home, packed as a cheerful little gift.',
     price: '₹349–₹699 / kit',
+    minimumPrice: 349,
+    maximumPrice: 699,
     occasions: [
       'Housewarming',
       'Mother’s Day',
@@ -208,6 +249,8 @@ const products = [
     description:
         'A considered bundle of useful, planet-friendly favourites, ready to make someone smile.',
     price: '₹899–₹2,499 / hamper',
+    minimumPrice: 899,
+    maximumPrice: 2499,
     occasions: [
       'Diwali',
       'Weddings',

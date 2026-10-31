@@ -13,6 +13,7 @@ class ProductCatalogPage extends StatefulWidget {
 class _ProductCatalogPageState extends State<ProductCatalogPage> {
   String _selectedCategory = 'All';
   String _selectedOccasion = 'All';
+  BudgetBand? _selectedBudgetBand;
   String _searchQuery = '';
 
   List<String> get _categories => [
@@ -28,6 +29,9 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
       final matchesOccasion =
           _selectedOccasion == 'All' ||
           product.occasions.contains(_selectedOccasion);
+      final matchesBudget =
+          _selectedBudgetBand == null ||
+          _selectedBudgetBand!.includesPriceRange(product);
       final matchesSearch =
           query.isEmpty ||
           product.name.toLowerCase().contains(query) ||
@@ -36,7 +40,10 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
           product.occasions.any(
             (occasion) => occasion.toLowerCase().contains(query),
           );
-      return matchesCategory && matchesOccasion && matchesSearch;
+      return matchesCategory &&
+          matchesOccasion &&
+          matchesBudget &&
+          matchesSearch;
     }).toList();
   }
 
@@ -306,6 +313,55 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
         const Padding(
           padding: EdgeInsets.fromLTRB(22, 0, 22, 9),
           child: Text(
+            'Shop by budget',
+            style: TextStyle(
+              color: Color(0xFF536359),
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 44,
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 22),
+            scrollDirection: Axis.horizontal,
+            itemCount: budgetBands.length + 1,
+            separatorBuilder: (context, index) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              final band = index == 0 ? null : budgetBands[index - 1];
+              final selected = band == _selectedBudgetBand;
+              return ChoiceChip(
+                label: Text(band?.label ?? 'All budgets'),
+                selected: selected,
+                showCheckmark: false,
+                onSelected: (value) {
+                  setState(() => _selectedBudgetBand = band);
+                },
+                labelStyle: TextStyle(
+                  color: selected ? Colors.white : const Color(0xFF536359),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                ),
+                selectedColor: const Color(0xFF174B3A),
+                backgroundColor: Colors.white,
+                side: BorderSide(
+                  color: selected
+                      ? const Color(0xFF174B3A)
+                      : const Color(0xFFE6E9E3),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 9),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(22, 0, 22, 9),
+          child: Text(
             'Shop by category',
             style: TextStyle(
               color: Color(0xFF536359),
@@ -377,6 +433,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                 _searchQuery = '';
                 _selectedCategory = 'All';
                 _selectedOccasion = 'All';
+                _selectedBudgetBand = null;
               });
             },
             child: const Text('Clear filters'),
