@@ -64,6 +64,7 @@ void main() {
       otherCustomisation: 'Use recycled packaging',
       message: 'Please share a quote',
       submittedAt: DateTime(2026, 10, 31),
+      submittedFrom: kIsWeb ? EnquirySource.web : EnquirySource.mobile,
     );
 
     final documentData = EnquiryService.toFirestoreData(enquiry);
@@ -81,6 +82,7 @@ void main() {
       'other_info',
       'phone',
       'products_selected',
+      'submitted_at',
     });
     expect(documentData['budget_per_unit'], 500.5);
     expect(documentData['customisation_needed'], ['Logo printing']);
@@ -92,6 +94,10 @@ void main() {
       'Plantable Seed Cards',
       'Everyday Canvas Tote',
     ]);
+    expect(
+      documentData['submitted_at'],
+      Timestamp.fromDate(DateTime(2026, 10, 31)),
+    );
   });
 
   testWidgets('catalog provides access to my enquiries', (tester) async {
@@ -130,6 +136,7 @@ void main() {
         otherCustomisation: '',
         message: '',
         submittedAt: DateTime(2026, 10, 31),
+        submittedFrom: kIsWeb ? EnquirySource.web : EnquirySource.mobile,
       ),
     );
 
@@ -138,16 +145,16 @@ void main() {
 
     expect(find.text('Plantable Seed Cards'), findsOneWidget);
     expect(find.text('Employee Onboarding · 25 units'), findsOneWidget);
+    expect(find.text('From ${kIsWeb ? 'Web' : 'Mobile'}'), findsOneWidget);
     await tester.tap(find.text('Plantable Seed Cards'));
     await tester.pumpAndSettle();
     expect(find.text('Enquiry details'), findsOneWidget);
     expect(find.textContaining('taylor@example.com'), findsOneWidget);
     expect(
-      find.text(
-        'This enquiry is saved locally and has not been sent to V Green Media.',
-      ),
+      find.textContaining('Submitted from: ${kIsWeb ? 'Web' : 'Mobile'}'),
       findsOneWidget,
     );
+    expect(find.text('Submitted to V Green Media.'), findsOneWidget);
   });
 
   testWidgets('catalog shows products and product details', (tester) async {
@@ -241,6 +248,62 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     expect(find.text('Message (optional)'), findsOneWidget);
+  });
+
+  testWidgets('enquiry form validates phone and email during entry', (
+    tester,
+  ) async {
+    await tester.pumpWidget(const MaterialApp(home: EnquiryFormPage()));
+    await tester.pumpAndSettle();
+
+    final nameField = find.byWidgetPredicate(
+      (widget) => widget is TextField && widget.decoration?.labelText == 'Name',
+    );
+    final companyField = find.byWidgetPredicate(
+      (widget) =>
+          widget is TextField && widget.decoration?.labelText == 'Company',
+    );
+    final phoneField = find.byWidgetPredicate(
+      (widget) =>
+          widget is TextField && widget.decoration?.labelText == 'Phone',
+    );
+    final emailField = find.byWidgetPredicate(
+      (widget) =>
+          widget is TextField && widget.decoration?.labelText == 'Email',
+    );
+
+    expect(
+      tester.widget<TextField>(phoneField).keyboardType,
+      TextInputType.number,
+    );
+    await tester.tap(nameField);
+    await tester.pumpAndSettle();
+    expect(find.text('Enter your name'), findsOneWidget);
+
+    await tester.tap(companyField);
+    await tester.pumpAndSettle();
+    expect(find.text('Enter your company name'), findsOneWidget);
+
+    await tester.tap(phoneField);
+    await tester.pumpAndSettle();
+    expect(find.text('Enter your phone number'), findsOneWidget);
+
+    await tester.enterText(phoneField, '123456789');
+    await tester.pumpAndSettle();
+    expect(find.text('Enter your phone number'), findsNothing);
+    expect(find.text('Enter a valid phone number'), findsOneWidget);
+
+    await tester.enterText(phoneField, '1234567890');
+    await tester.pumpAndSettle();
+    expect(find.text('Enter a valid phone number'), findsNothing);
+
+    await tester.enterText(phoneField, '123456789012');
+    await tester.pumpAndSettle();
+    expect(tester.widget<TextField>(phoneField).controller!.text, '1234567890');
+
+    await tester.enterText(emailField, 'not-an-email');
+    await tester.pumpAndSettle();
+    expect(find.text('Enter a valid email address'), findsOneWidget);
   });
 
   testWidgets('thank-you screen confirms enquiry without a dialog', (

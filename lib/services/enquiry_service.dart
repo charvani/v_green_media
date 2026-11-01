@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 import '../data/enquiry.dart';
 
@@ -22,7 +21,7 @@ class EnquiryService {
     'customisation_needed': enquiry.customisations,
     'delivery_date': Timestamp.fromDate(enquiry.deliveryDate),
     'email': enquiry.email,
-    'enquiry_from': kIsWeb ? 'web' : 'mobile',
+    'enquiry_from': enquiry.submittedFrom.name,
     'message': enquiry.message,
     'name': enquiry.name,
     'number_of_units': enquiry.units,
@@ -30,5 +29,6 @@ class EnquiryService {
     'other_info': enquiry.otherCustomisation,
     'phone': enquiry.phone,
     'products_selected': enquiry.products,
+    'submitted_at': Timestamp.fromDate(enquiry.submittedAt),
   };
 }

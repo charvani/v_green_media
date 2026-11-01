@@ -131,7 +131,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'V GREEN',
+                'V GREEN MEDIA',
                 style: TextStyle(
                   color: Color(0xFF174B3A),
                   fontSize: 16,
@@ -140,7 +140,7 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                 ),
               ),
               Text(
-                'MEDIA & MEANINGFUL GIFTS',
+                'MEMORABLE & MEANINGFUL GIFTS',
                 style: TextStyle(
                   color: Color(0xFF78847A),
                   fontSize: 9,
@@ -256,20 +256,20 @@ class _ProductCatalogPageState extends State<ProductCatalogPage> {
                 ),
               ),
               const SizedBox(width: 15),
-              const Icon(
-                Icons.tune_rounded,
-                size: 16,
-                color: Color(0xFF4E7859),
-              ),
-              const SizedBox(width: 6),
-              const Text(
-                'Made personal',
-                style: TextStyle(
-                  color: Color(0xFF315B40),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              // const Icon(
+              //   Icons.tune_rounded,
+              //   size: 16,
+              //   color: Color(0xFF4E7859),
+              // ),
+              // const SizedBox(width: 6),
+              // const Text(
+              //   'Made personal',
+              //   style: TextStyle(
+              //     color: Color(0xFF315B40),
+              //     fontSize: 12,
+              //     fontWeight: FontWeight.w700,
+              //   ),
+              // ),
             ],
           ),
         ],

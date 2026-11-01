@@ -74,13 +74,13 @@ class _MyEnquiriesPageState extends State<MyEnquiriesPage> {
             return ListView(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
               children: [
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(2, 0, 2, 14),
-                  child: Text(
-                    'Saved on this device or browser',
-                    style: TextStyle(color: Color(0xFF657269), height: 1.5),
-                  ),
-                ),
+                // const Padding(
+                //   padding: EdgeInsets.fromLTRB(2, 0, 2, 14),
+                //   child: Text(
+                //     '',
+                //     style: TextStyle(color: Color(0xFF657269), height: 1.5),
+                //   ),
+                // ),
                 for (final enquiry in enquiries)
                   _EnquiryCard(
                     enquiry: enquiry,
@@ -111,6 +111,7 @@ class _MyEnquiriesPageState extends State<MyEnquiriesPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               _DetailLine('Submitted', _formatDate(enquiry.submittedAt)),
+              _DetailLine('Submitted from', enquiry.submittedFrom.label),
               _DetailLine('Name', enquiry.name),
               if (enquiry.company.isNotEmpty)
                 _DetailLine('Company', enquiry.company),
@@ -132,7 +133,7 @@ class _MyEnquiriesPageState extends State<MyEnquiriesPage> {
                 _DetailLine('Message', enquiry.message),
               const SizedBox(height: 8),
               const Text(
-                'This enquiry is saved locally and has not been sent to V Green Media.',
+                'Submitted to V Green Media.',
                 style: TextStyle(color: Color(0xFF657269), fontSize: 12),
               ),
             ],
@@ -193,6 +194,11 @@ class _EnquiryCard extends StatelessWidget {
               Text(
                 '${enquiry.occasion} · ${enquiry.units} units',
                 style: const TextStyle(color: Color(0xFF536359)),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'From ${enquiry.submittedFrom.label}',
+                style: const TextStyle(color: Color(0xFF536359), fontSize: 12),
               ),
               const SizedBox(height: 6),
               Text(

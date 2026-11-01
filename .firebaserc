@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "v-green-media"
-  }
+  },
+  "targets": {
+    "v-green-media": {
+      "hosting": {
+        "website": [
+          "v-green-media"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

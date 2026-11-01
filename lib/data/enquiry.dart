@@ -2,6 +2,24 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+enum EnquirySource {
+  web,
+  mobile,
+  unknown;
+
+  static EnquirySource fromValue(String? value) => switch (value) {
+    'web' => EnquirySource.web,
+    'mobile' => EnquirySource.mobile,
+    _ => EnquirySource.unknown,
+  };
+
+  String get label => switch (this) {
+    EnquirySource.web => 'Web',
+    EnquirySource.mobile => 'Mobile',
+    EnquirySource.unknown => 'Unknown',
+  };
+}
+
 class Enquiry {
   const Enquiry({
     required this.id,
@@ -18,6 +36,7 @@ class Enquiry {
     required this.otherCustomisation,
     required this.message,
     required this.submittedAt,
+    required this.submittedFrom,
   });
 
   final String id;
@@ -34,6 +53,7 @@ class Enquiry {
   final String otherCustomisation;
   final String message;
   final DateTime submittedAt;
+  final EnquirySource submittedFrom;
 
   Map<String, Object> toJson() => {
     'id': id,
@@ -50,6 +70,7 @@ class Enquiry {
     'otherCustomisation': otherCustomisation,
     'message': message,
     'submittedAt': submittedAt.toIso8601String(),
+    'submittedFrom': submittedFrom.name,
   };
 
   factory Enquiry.fromJson(Map<String, dynamic> json) => Enquiry(
@@ -67,6 +88,9 @@ class Enquiry {
     otherCustomisation: json['otherCustomisation'] as String,
     message: json['message'] as String,
     submittedAt: DateTime.parse(json['submittedAt'] as String),
+    submittedFrom: EnquirySource.fromValue(
+      json['submittedFrom'] as String?,
+    ),
   );
 }
 

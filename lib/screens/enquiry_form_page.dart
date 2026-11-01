@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../data/enquiry.dart';
 import '../data/products.dart';
@@ -24,6 +26,9 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
   ];
 
   final _formKey = GlobalKey<FormState>();
+  final _nameFieldKey = GlobalKey<FormFieldState<String>>();
+  final _companyFieldKey = GlobalKey<FormFieldState<String>>();
+  final _phoneFieldKey = GlobalKey<FormFieldState<String>>();
   final _nameController = TextEditingController();
   final _companyController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -75,6 +80,7 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
       body: SafeArea(
         child: Form(
           key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: ListView(
             padding: const EdgeInsets.fromLTRB(22, 12, 22, 32),
             children: [
@@ -95,21 +101,34 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
               _field(
                 label: 'Name',
                 controller: _nameController,
+                fieldKey: _nameFieldKey,
                 validator: (value) => _required(value, 'Enter your name'),
                 textCapitalization: TextCapitalization.words,
+                autofillHints: const [AutofillHints.name],
               ),
               _field(
                 label: 'Company',
                 controller: _companyController,
+                fieldKey: _companyFieldKey,
+                validator: (value) =>
+                    _required(value, 'Enter your company name'),
                 textCapitalization: TextCapitalization.words,
+                autofillHints: const [AutofillHints.organizationName],
               ),
               _field(
                 label: 'Phone',
                 controller: _phoneController,
-                keyboardType: TextInputType.phone,
+                fieldKey: _phoneFieldKey,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ],
+                autofillHints: const [AutofillHints.telephoneNumber],
                 validator: (value) {
-                  final digits = value?.replaceAll(RegExp(r'\D'), '') ?? '';
-                  return digits.length < 10 || digits.length > 15
+                  final digits = value?.trim() ?? '';
+                  if (digits.isEmpty) return 'Enter your phone number';
+                  return digits.length != 10
                       ? 'Enter a valid phone number'
                       : null;
                 },
@@ -118,9 +137,16 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
                 label: 'Email',
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
+                autocorrect: false,
+                enableSuggestions: false,
+                autofillHints: const [AutofillHints.email],
                 validator: (value) {
                   final email = value?.trim() ?? '';
-                  return RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)
+                  return RegExp(
+                        r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@"
+                        r"[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?"
+                        r"(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)+$",
+                      ).hasMatch(email)
                       ? null
                       : 'Enter a valid email address';
                 },
@@ -145,6 +171,7 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
                 label: 'Number of units',
                 controller: _unitsController,
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (value) {
                   final units = int.tryParse(value?.trim() ?? '');
                   return units == null || units < 1
@@ -158,10 +185,17 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
+                inputFormatters: [
+                  TextInputFormatter.withFunction((oldValue, newValue) {
+                    return RegExp(r'^\d*\.?\d{0,2}$').hasMatch(newValue.text)
+                        ? newValue
+                        : oldValue;
+                  }),
+                ],
                 prefixText: '₹ ',
                 validator: (value) {
                   final budget = double.tryParse(value?.trim() ?? '');
-                  return budget == null || budget <= 0
+                  return budget == null || !budget.isFinite || budget <= 0
                       ? 'Enter a valid budget per unit'
                       : null;
                 },
@@ -263,11 +297,13 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
                 label: 'Other customisation details (optional)',
                 controller: _otherCustomisationController,
                 maxLines: 2,
+                textCapitalization: TextCapitalization.sentences,
               ),
               _field(
                 label: 'Message (optional)',
                 controller: _messageController,
                 maxLines: 4,
+                textCapitalization: TextCapitalization.sentences,
               ),
               const SizedBox(height: 8),
               SizedBox(
@@ -301,14 +337,30 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
     String? prefixText,
     String? Function(String?)? validator,
     int maxLines = 1,
+    List<TextInputFormatter>? inputFormatters,
+    Iterable<String>? autofillHints,
+    bool autocorrect = true,
+    bool enableSuggestions = true,
+    GlobalKey<FormFieldState<String>>? fieldKey,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
+        key: fieldKey,
         controller: controller,
         keyboardType: keyboardType,
         textCapitalization: textCapitalization,
+        textInputAction: maxLines == 1
+            ? TextInputAction.next
+            : TextInputAction.newline,
+        inputFormatters: inputFormatters,
+        autofillHints: autofillHints,
+        autocorrect: autocorrect,
+        enableSuggestions: enableSuggestions,
         maxLines: maxLines,
+        onTap: fieldKey == null
+            ? null
+            : () => fieldKey.currentState?.validate(),
         validator: validator,
         decoration: _decoration(label).copyWith(prefixText: prefixText),
       ),
@@ -381,6 +433,7 @@ class _EnquiryFormPageState extends State<EnquiryFormPage> {
       otherCustomisation: _otherCustomisationController.text.trim(),
       message: _messageController.text.trim(),
       submittedAt: submittedAt,
+      submittedFrom: kIsWeb ? EnquirySource.web : EnquirySource.mobile,
     );
     setState(() => _isSubmitting = true);
     try {
